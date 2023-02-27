@@ -1,24 +1,10 @@
 <template>
     <a-layout>
-        <a-layout-header class="header">
-            <div class="logo" />
-            <a-menu
-                v-model:selectedKeys="selectedKeys1"
-                theme="dark"
-                mode="horizontal"
-                :style="{ lineHeight: '64px' }"
-            >
-                <a-menu-item key="1">nav 1</a-menu-item>
-                <a-menu-item key="2">nav 2</a-menu-item>
-                <a-menu-item key="3">nav 3</a-menu-item>
-            </a-menu>
-        </a-layout-header>
-
+        
+        <the-header></the-header>
         <router-view></router-view>
-
-        <a-layout-footer style="text-align: center">
-            Foolcats e-book
-        </a-layout-footer>
+        <the-footer></the-footer>
+        
     </a-layout>
 </template>
 
@@ -40,3 +26,19 @@
     background: #fff;
 }
 </style>
+
+<script lang="ts">
+
+import { defineComponent } from "vue";
+import TheHeader from "@/components/TheHeader.vue";
+import TheFooter from "@/components/TheFooter.vue"
+
+export default defineComponent({
+    name: "HomeView",
+    components: {
+      TheHeader,
+      TheFooter,
+    },
+});
+
+</script>
