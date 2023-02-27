@@ -4,6 +4,10 @@
     <router-link to="/about">About</router-link>
   </nav>
   <router-view/>
+  <a-button type="primary">Primary Button</a-button>
+
+  <!-- <div class="bg-gray-600 mt-6">hello world</div> -->
+
 </template>
 
 <style>
