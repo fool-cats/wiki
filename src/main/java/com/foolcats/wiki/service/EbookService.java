@@ -5,7 +5,7 @@ import com.foolcats.wiki.domain.EbookExample;
 import com.foolcats.wiki.mapper.EbookMapper;
 import com.foolcats.wiki.req.EbookReq;
 import com.foolcats.wiki.resp.EbookResp;
-import org.springframework.beans.BeanUtils;
+import com.foolcats.wiki.utils.CopyUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,14 +34,14 @@ public class EbookService {
 
 
 
-         for (Ebook ebook : ebookList) {
-              EbookResp ebookResp = new EbookResp();
-              BeanUtils.copyProperties(ebook, ebookResp);
-             // 对象复制
+//         for (Ebook ebook : ebookList) {
+////              EbookResp ebookResp = new EbookResp();
+////              BeanUtils.copyProperties(ebook, ebookResp);
+//             // 对象复制
 //             EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
-
-             respList.add(ebookResp);
-         }
+//
+//             respList.add(ebookResp);
+//         }
 
 
 
@@ -56,7 +56,9 @@ public class EbookService {
 //        }
 
 
-        return respList;
+        List<EbookResp>  list = CopyUtil.copyList(ebookList, EbookResp.class);
+
+        return list;
     };
 
 }
