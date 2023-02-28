@@ -4,6 +4,13 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import router from './router'
 import store from './store'
+import * as Icons from '@ant-design/icons-vue'
 // import "./assets/css/tailwind.css"
 
-createApp(App).use(store).use(Antd).use(router).mount('#app')
+const app = createApp(App)
+app.use(store).use(Antd).use(router).mount('#app')
+
+const icons: any = Icons
+for(const i of icons){
+    app.component(i,icons[i])
+}
