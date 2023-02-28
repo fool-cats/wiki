@@ -14,3 +14,5 @@ const icons: any = Icons
 for(const i of icons){
     app.component(i,icons[i])
 }
+
+console.log('enviroment:',process.env.NODE_ENV);
