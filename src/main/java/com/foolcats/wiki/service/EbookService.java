@@ -7,6 +7,7 @@ import com.foolcats.wiki.req.EbookReq;
 import com.foolcats.wiki.resp.EbookResp;
 import com.foolcats.wiki.utils.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -21,8 +22,13 @@ public class EbookService {
         EbookExample ebookExample = new EbookExample();
 //        createCriteria 相当于where
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-//        使用%模糊查询
-        criteria.andNameLike("%" + req.getName() + "%");
+
+        if(!ObjectUtils.isEmpty(req.getName())){
+            //        使用%模糊查询
+            criteria.andNameLike("%" + req.getName() + "%");
+        }
+
+
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
 
