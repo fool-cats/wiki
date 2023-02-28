@@ -129,7 +129,7 @@ export default defineComponent({
             console.log("HomeView onMounted");
 
             axios
-                .get("http://localhost:8080/ebook/list")
+                .get(process.env.VUE_APP_Server+"/ebook/list")
                 .then((response) => {
                     const data = response.data;
                     ebooks.value = data.content;
