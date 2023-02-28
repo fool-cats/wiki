@@ -118,7 +118,7 @@ export default defineComponent({
     },
 
     setup() {
-        console.log("HomeView setup");
+        // console.log("HomeView setup");
 
         // 接收后端返回的数据
         const ebooks = ref();
@@ -126,7 +126,7 @@ export default defineComponent({
 
         // 初始化逻辑尽量都放在生命周期函数里，setup就放一些参数，和方法的定义。
         onMounted(() => {
-            console.log("HomeView onMounted");
+            // console.log("HomeView onMounted");
 
             axios
                 .get("/ebook/list")
@@ -134,7 +134,7 @@ export default defineComponent({
                     const data = response.data;
                     ebooks.value = data.content;
                     ebooks1.books = data.content;
-                    console.log(response);
+                    // console.log(response);
                 });
         });
 
