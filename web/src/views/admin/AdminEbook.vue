@@ -21,7 +21,7 @@
                 </template>
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
-                        <a-button type="primary" @click="edit"> 编辑 </a-button>
+                        <a-button type="primary" @click="edit(record)"> 编辑 </a-button>
                         <a-button type="danger"> 删除 </a-button>
                     </a-space>
                 </template>
@@ -35,7 +35,7 @@
         :confirm-loading="modalLoading"
         @ok="handleModalOk"
     >
-        <!-- <a-form
+        <a-form
 
             :model="ebook"
             :label-col="{ span: 6 }"
@@ -61,8 +61,7 @@
             <a-form-item label="描述">
                 <a-input v-model:value="ebook.description" type="textarea" />
             </a-form-item>
-        </a-form> -->
-        <p>test</p>
+        </a-form>
     </a-modal>
 </template>
 
@@ -149,7 +148,7 @@ export default defineComponent({
        * 数组，[100, 101]对应：前端开发 / Vue
        */
     //   const categoryIds = ref();
-    //   const ebook = ref();
+      const ebook = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
       const handleModalOk = () => {
@@ -183,6 +182,7 @@ export default defineComponent({
        */
       const edit = (record: any) => {
         modalVisible.value = true;
+        ebook.value = record;
         // ebook.value = Tool.copy(record);
         // categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
       };
@@ -220,6 +220,7 @@ export default defineComponent({
 
             edit,
 
+            ebook,
             modalLoading,
             modalVisible,
             handleModalOk,
