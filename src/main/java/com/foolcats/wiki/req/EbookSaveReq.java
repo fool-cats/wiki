@@ -1,8 +1,8 @@
-package com.foolcats.wiki.resp;
+package com.foolcats.wiki.req;
 
 import java.util.Date;
 
-public class EbookResp {
+public class EbookSaveReq {
     private Long id;
 
     private String name;

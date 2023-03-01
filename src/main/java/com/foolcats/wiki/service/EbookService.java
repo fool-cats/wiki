@@ -4,7 +4,8 @@ import com.foolcats.wiki.domain.Ebook;
 import com.foolcats.wiki.domain.EbookExample;
 import com.foolcats.wiki.mapper.EbookMapper;
 import com.foolcats.wiki.req.EbookReq;
-import com.foolcats.wiki.resp.EbookResp;
+import com.foolcats.wiki.req.EbookSaveReq;
+import com.foolcats.wiki.resp.EbookQueryResp;
 import com.foolcats.wiki.resp.PageResp;
 import com.foolcats.wiki.utils.CopyUtil;
 import com.github.pagehelper.PageHelper;
@@ -25,7 +26,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(EbookReq req){
 
 
 
@@ -82,12 +83,26 @@ public class EbookService {
 
 
 //              列表复制
-        List<EbookResp>  list = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp>  list = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
         return pageResp;
     };
 
+    /*
+    * 保存前端改变的值
+    * */
+    public void save(EbookSaveReq req){
+//        将请求参数变为实体类Ebook
+        Ebook ebook = CopyUtil.copy(req,Ebook.class);
+//        保存分为新增保存和更新保存。
+        if(!ObjectUtils.isEmpty(req.getId())){
+            ebookMapper.updateByPrimaryKey(ebook);
+        }else {
+            ebookMapper.insert(ebook);
+        }
+
+    }
 }
