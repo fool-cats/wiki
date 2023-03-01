@@ -10,7 +10,7 @@
         >
             <a-table
                 :columns="columns"
-                :row-key="(record) => record.id"
+                :row-key="record => record.id"
                 :data-source="ebooks"
                 :pagination="pagination"
                 :loading="loading"
@@ -37,12 +37,12 @@ import axios from "axios";
 export default defineComponent({
     name: "AdminEbook",
     setup() {
-        const param = ref();
-        param.value = {};
+        // const param = ref();
+        // param.value = {};
         const ebooks = ref();
         const pagination = ref({
             current: 1,
-            pageSize: 2,
+            pageSize: 4,
             total: 0,
         });
         const loading = ref(false);
@@ -86,16 +86,22 @@ export default defineComponent({
         const handleQuery = (params: any) => {
             loading.value = true;
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-            ebooks.value = [];
-            axios.get("/ebook/list", params).then((response) => {
+            // ebooks.value = [];  
+            axios.get("/ebook/list", {
+                params: {
+                    page: params.page,
+                    size: params.size,
+                }
+            }).then((response) => {
                 loading.value = false;
                 const data = response.data;
 
-                ebooks.value = data.content;
+                ebooks.value = data.content.list;
 
                 // 重置分页按钮
                 pagination.value.current = params.page;
-                // pagination.value.total = data.content.total;
+                // pagination.value.total = data.content.total;  
+                pagination.value.total = data.content.total;
             });
         };
 
@@ -111,7 +117,12 @@ export default defineComponent({
         };
 
         onMounted(() => {
-            handleQuery({});
+            handleQuery({
+                // 这里的属性名要和后端接口的参数名一致，否则后端接收不到
+                //  /ebook/list?page=1&size=4
+                page: 1,
+                size: pagination.value.pageSize,
+            });
         });
 
         return {
