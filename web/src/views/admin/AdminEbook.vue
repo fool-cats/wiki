@@ -10,7 +10,7 @@
         >
             <a-table
                 :columns="columns"
-                :row-key="record => record.id"
+                :row-key="(record) => record.id"
                 :data-source="ebooks"
                 :pagination="pagination"
                 :loading="loading"
@@ -21,13 +21,49 @@
                 </template>
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
-                        <a-button type="primary"> 编辑 </a-button>
+                        <a-button type="primary" @click="edit"> 编辑 </a-button>
                         <a-button type="danger"> 删除 </a-button>
                     </a-space>
                 </template>
             </a-table>
         </a-layout-content>
     </a-layout>
+
+    <a-modal
+        title="电子书表单"
+        v-model:visible="modalVisible"
+        :confirm-loading="modalLoading"
+        @ok="handleModalOk"
+    >
+        <!-- <a-form
+
+            :model="ebook"
+            :label-col="{ span: 6 }"
+            :wrapper-col="{ span: 18 }"
+        >
+            <a-form-item label="封面">
+                <a-input v-model:value="ebook.cover" />
+            </a-form-item>
+            <a-form-item label="名称">
+                <a-input v-model:value="ebook.name" />
+            </a-form-item>
+            <a-form-item label="分类">
+                <a-cascader
+                    v-model:value="categoryIds"
+                    :field-names="{
+                        label: 'name',
+                        value: 'id',
+                        children: 'children',
+                    }"
+                    :options="level1"
+                />
+            </a-form-item>
+            <a-form-item label="描述">
+                <a-input v-model:value="ebook.description" type="textarea" />
+            </a-form-item>
+        </a-form> -->
+        <p>test</p>
+    </a-modal>
 </template>
 
 <script lang="ts">
@@ -86,24 +122,73 @@ export default defineComponent({
         const handleQuery = (params: any) => {
             loading.value = true;
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-            // ebooks.value = [];  
-            axios.get("/ebook/list", {
-                params: {
-                    page: params.page,
-                    size: params.size,
-                }
-            }).then((response) => {
-                loading.value = false;
-                const data = response.data;
+            // ebooks.value = [];
+            axios
+                .get("/ebook/list", {
+                    params: {
+                        page: params.page,
+                        size: params.size,
+                    },
+                })
+                .then((response) => {
+                    loading.value = false;
+                    const data = response.data;
 
-                ebooks.value = data.content.list;
+                    ebooks.value = data.content.list;
 
-                // 重置分页按钮
-                pagination.value.current = params.page;
-                // pagination.value.total = data.content.total;  
-                pagination.value.total = data.content.total;
-            });
+                    // 重置分页按钮
+                    pagination.value.current = params.page;
+                    // pagination.value.total = data.content.total;
+                    pagination.value.total = data.content.total;
+                });
         };
+
+
+        // -------- 表单 ---------
+      /**
+       * 数组，[100, 101]对应：前端开发 / Vue
+       */
+    //   const categoryIds = ref();
+    //   const ebook = ref();
+      const modalVisible = ref(false);
+      const modalLoading = ref(false);
+      const handleModalOk = () => {
+        modalLoading.value = true;
+        // ebook.value.category1Id = categoryIds.value[0];
+        // ebook.value.category2Id = categoryIds.value[1];
+        // axios.post("/ebook/save", ebook.value).then((response) => {
+        //   modalLoading.value = false;
+        //   const data = response.data; // data = commonResp
+        //   if (data.success) {
+        //     modalVisible.value = false;
+
+        //     // 重新加载列表
+        //     handleQuery({
+        //       page: pagination.value.current,
+        //       size: pagination.value.pageSize,
+        //     });
+        //   } else {
+        //     message.error(data.message);
+        //   }
+        // });
+
+        setTimeout(() => {
+          modalLoading.value = false;
+          modalVisible.value = false;
+        }, 2000);
+      };
+
+      /**
+       * 编辑
+       */
+      const edit = (record: any) => {
+        modalVisible.value = true;
+        // ebook.value = Tool.copy(record);
+        // categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
+      };
+
+
+
 
         /**
          * 表格点击页码时触发
@@ -132,6 +217,12 @@ export default defineComponent({
             columns,
             loading,
             handleTableChange,
+
+            edit,
+
+            modalLoading,
+            modalVisible,
+            handleModalOk,
         };
     },
 });
