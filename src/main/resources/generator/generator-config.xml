@@ -49,6 +49,6 @@
 <!--        <table tableName="ebook_snapshot"/>-->
 <!--        <table tableName="test"/>-->
 <!--        <table tableName="demo"/>-->
-        <table tableName="ebook"/>
+        <table tableName="category"/>
     </context>
 </generatorConfiguration>

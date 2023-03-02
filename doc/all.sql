@@ -43,4 +43,28 @@ CREATE TABLE `ebook`  (
 
 insert into ebook (id, name,  description ) values (1,'Spring boot教程','自动配置简单得很');
 insert into ebook (id, name,  description ) values (2,'vue 入门教程','企业级应用首先框架');
-insert into ebook (id, name,  description ) values (3,'python 教程','零基础开始学')
+insert into ebook (id, name,  description ) values (3,'python 教程','零基础开始学');
+
+
+
+DROP TABLE IF EXISTS `category`;
+CREATE TABLE `category`  (
+                             `id` bigint NOT NULL COMMENT 'id',
+                             `parent` bigint NOT NULL DEFAULT 0 COMMENT '父id',
+                             `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
+                             `sort` int NULL DEFAULT NULL COMMENT '顺序',
+                             PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '分类' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of category
+-- ----------------------------
+INSERT INTO `category` VALUES (100, 000, '前端开发', 100);
+INSERT INTO `category` VALUES (101, 100, 'Vue', 101);
+INSERT INTO `category` VALUES (102, 100, 'HTML&CSS', 102);
+INSERT INTO `category` VALUES (200, 000, '后端开发', 200);
+INSERT INTO `category` VALUES (201, 200, '基础应用', 201);
+INSERT INTO `category` VALUES (202, 200, '框架应用', 202);
+INSERT INTO `category` VALUES (300, 000, '数据库', 300);
+INSERT INTO `category` VALUES (301, 300, 'Mysql', 301);
+INSERT INTO `category` VALUES (302, 300, 'Mybatis', 302);
