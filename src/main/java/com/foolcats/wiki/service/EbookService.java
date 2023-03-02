@@ -8,6 +8,7 @@ import com.foolcats.wiki.req.EbookSaveReq;
 import com.foolcats.wiki.resp.EbookQueryResp;
 import com.foolcats.wiki.resp.PageResp;
 import com.foolcats.wiki.utils.CopyUtil;
+import com.foolcats.wiki.utils.SnowFlake;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
+    @Resource
+    private SnowFlake snowFlake;
     public PageResp<EbookQueryResp> list(EbookReq req){
 
 
@@ -101,6 +104,8 @@ public class EbookService {
         if(!ObjectUtils.isEmpty(req.getId())){
             ebookMapper.updateByPrimaryKey(ebook);
         }else {
+
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         }
 

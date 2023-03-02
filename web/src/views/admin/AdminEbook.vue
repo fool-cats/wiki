@@ -8,6 +8,9 @@
                 minHeight: '280px',
             }"
         >
+        <p>
+            <a-button type="primary" @click="add()" size="large"> 新增 </a-button>
+        </p>
             <a-table
                 :columns="columns"
                 :row-key="(record) => record.id"
@@ -188,6 +191,17 @@ export default defineComponent({
         // categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
       };
 
+        /**
+       * 新增
+       */
+       const add = () => {
+        modalVisible.value = true;
+        ebook.value = {};
+
+        // ebook.value = Tool.copy(record);
+        // categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
+      };
+
 
 
 
@@ -220,6 +234,8 @@ export default defineComponent({
             handleTableChange,
 
             edit,
+            add,
+
 
             ebook,  
             modalLoading,
