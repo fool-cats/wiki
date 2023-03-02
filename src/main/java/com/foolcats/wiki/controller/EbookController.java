@@ -6,10 +6,7 @@ import com.foolcats.wiki.resp.CommonResp;
 import com.foolcats.wiki.resp.EbookQueryResp;
 import com.foolcats.wiki.resp.PageResp;
 import com.foolcats.wiki.service.EbookService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -37,6 +34,18 @@ public class EbookController {
         CommonResp resp = new CommonResp();
 //        PageResp<EbookResp> list =
                 ebookService.save(req);
+
+//        resp.setContent(list);
+        return resp;
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id) {
+//      删除一般是通过id来删除的，因为id是主键
+        CommonResp resp = new CommonResp();
+//        PageResp<EbookResp> list =
+        ebookService.delete(id);
 
 //        resp.setContent(list);
         return resp;
