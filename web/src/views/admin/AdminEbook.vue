@@ -35,11 +35,7 @@
                             cancel-text="否"
                             @confirm="handleDelete(record.id)"
                         >
-                            <a-button
-                                type="danger"
-                            >
-                                删除
-                            </a-button>
+                            <a-button type="danger"> 删除 </a-button>
                         </a-popconfirm>
                     </a-space>
                 </template>
@@ -98,6 +94,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import axios from "axios";
+import {message} from "ant-design-vue";
 
 export default defineComponent({
     name: "AdminEbook",
@@ -163,12 +160,16 @@ export default defineComponent({
                     loading.value = false;
                     const data = response.data;
 
-                    ebooks.value = data.content.list;
+                    if (data.success) {
+                        ebooks.value = data.content.list;
 
-                    // 重置分页按钮
-                    pagination.value.current = params.page;
-                    // pagination.value.total = data.content.total;
-                    pagination.value.total = data.content.total;
+                        // 重置分页按钮
+                        pagination.value.current = params.page;
+                        // pagination.value.total = data.content.total;
+                        pagination.value.total = data.content.total;
+                    }else {
+                        message.error(data.message);
+                    }
                 });
         };
 
@@ -269,6 +270,7 @@ export default defineComponent({
 
         return {
             // param,
+            // message,
             ebooks,
             pagination,
             columns,
