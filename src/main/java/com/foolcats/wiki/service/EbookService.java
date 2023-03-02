@@ -3,7 +3,7 @@ package com.foolcats.wiki.service;
 import com.foolcats.wiki.domain.Ebook;
 import com.foolcats.wiki.domain.EbookExample;
 import com.foolcats.wiki.mapper.EbookMapper;
-import com.foolcats.wiki.req.EbookReq;
+import com.foolcats.wiki.req.EbookQueryReq;
 import com.foolcats.wiki.req.EbookSaveReq;
 import com.foolcats.wiki.resp.EbookQueryResp;
 import com.foolcats.wiki.resp.PageResp;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class EbookService {
 
     @Resource
     private SnowFlake snowFlake;
-    public PageResp<EbookQueryResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(@Valid EbookQueryReq req){
 
 
 
