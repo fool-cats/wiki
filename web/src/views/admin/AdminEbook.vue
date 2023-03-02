@@ -187,18 +187,18 @@ export default defineComponent({
             // ebook.value.category2Id = categoryIds.value[1];
             axios.post("/ebook/save", ebook.value).then((response) => {
                 const data = response.data; // data = commonResp
+                modalLoading.value = false;
                 if (data.success) {
                     modalVisible.value = false;
-                    modalLoading.value = false;
+                    
                     // 重新加载列表
                     handleQuery({
                         page: pagination.value.current,
                         size: pagination.value.pageSize,
                     });
-                }
-                //   else {
-                //     message.error(data.message);
-                //   }
+                }else {
+                    message.error(data.message);
+                  }
             });
 
             // setTimeout(() => {

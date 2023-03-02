@@ -1,10 +1,12 @@
 package com.foolcats.wiki.req;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public class EbookSaveReq {
     private Long id;
 
+    @NotNull(message = "名字不能为空")
     private String name;
 
     private Long category1Id;

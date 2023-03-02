@@ -29,7 +29,7 @@ public class EbookController {
 
 //    保存的请求参数跟表结构一样。
     @PostMapping("/save")
-    public CommonResp save(@RequestBody EbookSaveReq req) {
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req) {
 //        不需要返回任何东西给前端，只需true or false
 //        CommonResp<PageResp<EbookResp>> resp = new CommonResp<>();
         CommonResp resp = new CommonResp();
