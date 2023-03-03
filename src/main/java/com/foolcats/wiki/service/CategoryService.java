@@ -29,11 +29,27 @@ public class CategoryService {
 
     @Resource
     private SnowFlake snowFlake;
+    public List<CategoryQueryResp> all(){
+        CategoryExample categoryExample = new CategoryExample();
+//        根据sort排序。
+        categoryExample.setOrderByClause("sort asc");
+//        这条相当于sql，
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+
+//              列表复制
+        List<CategoryQueryResp>  list = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+
+        return list;
+    };
+
+
+
     public PageResp<CategoryQueryResp> list(CategoryQueryReq req){
 
 
 
         CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
 //        createCriteria 相当于where
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
 
@@ -87,6 +103,7 @@ public class CategoryService {
         pageResp.setList(list);
         return pageResp;
     };
+
 
     /*
     * 保存前端改变的值
