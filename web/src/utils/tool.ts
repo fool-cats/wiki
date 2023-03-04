@@ -18,7 +18,7 @@ export class Tool {
   }
 
   /**
-   * 对象复制
+   * 对象复制 
    * @param obj
    */
   public static copy (obj: object) {
@@ -36,16 +36,19 @@ export class Tool {
       return [];
     }
 
+    // 该数组用于存放最终结果 也就是树形结构 
     const result = [];
     for (let i = 0; i < array.length; i++) {
       const c = array[i];
+      // 直到没有父节点为止，停止递归
       // console.log(Number(c.parent), Number(parentId));
       if (Number(c.parent) === Number(parentId)) {
         result.push(c);
 
-        // 递归查看当前节点对应的子节点
+        // 递归查看当前节点对应的子节点 是否有子节点 有则继续递归
         const children = Tool.array2Tree(array, c.id);
         if (Tool.isNotEmpty(children)) {
+          // 如果有子节点 则将子节点放入当前节点的children属性中
           c.children = children;
         }
       }
