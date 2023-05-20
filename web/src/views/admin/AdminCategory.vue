@@ -11,12 +11,7 @@
             <p>
                 <a-form layout="inline" :model="param">
                     <a-form-item>
-                        <a-button
-                            type="primary"
-                            @click="
-                                handleQuery()
-                            "
-                        >
+                        <a-button type="primary" @click="handleQuery()">
                             查询
                         </a-button>
                     </a-form-item>
@@ -33,7 +28,6 @@
                 :data-source="level1"
                 :pagination="false"
                 :loading="loading"
-                
             >
                 <template #cover="{ text: cover }">
                     <img v-if="cover" :src="cover" alt="avatar" />
@@ -68,14 +62,13 @@
             :label-col="{ span: 6 }"
             :wrapper-col="{ span: 18 }"
         >
-        
             <a-form-item label="名称">
                 <a-input v-model:value="ebook.name" />
             </a-form-item>
             <a-form-item label="父分类">
                 <a-input v-model:value="ebook.parent"></a-input>
             </a-form-item>
-            
+
             <a-form-item label="顺序">
                 <a-input v-model:value="ebook.sort" type="textarea" />
             </a-form-item>
@@ -87,14 +80,12 @@
 import { defineComponent, onMounted, ref } from "vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
-import {Tool} from "@/utils/tool";
+import { Tool } from "@/utils/tool";
 import facebookFilled from "@ant-design/icons-vue/lib/icons/FacebookFilled";
-
-
 
 export default defineComponent({
     name: "AdminCategory",
-  methods: {facebookFilled},
+    methods: { facebookFilled },
     setup() {
         const param = ref();
         param.value = {};
@@ -123,22 +114,21 @@ export default defineComponent({
             },
         ];
 
-            // 一级分类树，children是二级分类
+        // 一级分类树，children是二级分类
 
-            /**
-             * [{
-             *  id: "".
-             *  name: "",
-             *  children: [{
-             *      id: "",
-             *      name: "",
-             * 
-             *         }]
-             * }]
-             * 
-             */
-            const level1 = ref();
-
+        /**
+         * [{
+         *  id: "".
+         *  name: "",
+         *  children: [{
+         *      id: "",
+         *      name: "",
+         *
+         *         }]
+         * }]
+         *
+         */
+        const level1 = ref();
 
         /**
          * 数据查询
@@ -147,26 +137,22 @@ export default defineComponent({
             loading.value = true;
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
             // categorys.value = [];
-            axios
-                .get("/category/all")
-                .then((response) => {
-                    loading.value = false;
-                    const data = response.data;
+            axios.get("/category/all").then((response) => {
+                loading.value = false;
+                const data = response.data;
 
-                    if (data.success) {
-                        categorys.value = data.content;
-                        console.log("原始数据",categorys.value);
+                if (data.success) {
+                    categorys.value = data.content;
+                    console.log("原始数据", categorys.value);
 
-                        level1.value = [];
-                        level1.value = Tool.array2Tree(categorys.value, 0);
+                    level1.value = [];
+                    level1.value = Tool.array2Tree(categorys.value, 0);
 
-                        console.log("树形结构",level1);
-                        
-                        
-                    } else {
-                        message.error(data.message);
-                    }
-                });
+                    console.log("树形结构", level1);
+                } else {
+                    message.error(data.message);
+                }
+            });
         };
 
         // -------- 表单 ---------
@@ -238,7 +224,6 @@ export default defineComponent({
             });
         };
 
-    
         onMounted(() => {
             handleQuery();
         });

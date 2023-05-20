@@ -45,7 +45,7 @@ public class EbookService {
 
 
 
-//        只需一句就可实现后端分页。
+//        只需三句就可实现后端分页。
         PageHelper.startPage(req.getPage(), req.getSize());
 //        这条相当于sql，
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
@@ -53,6 +53,7 @@ public class EbookService {
 //        ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
+
         LOG.info("总行数:{}",pageInfo.getTotal());
         LOG.info("总页数:{}",pageInfo.getPages());
 
