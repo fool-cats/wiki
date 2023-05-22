@@ -63,14 +63,13 @@
             :wrapper-col="{ span: 18 }"
         >
             <a-form-item label="名称">
-                <a-input v-model:value="ebook.name" />
+                <a-input v-model:value="category.name" />
+            </a-form-item>
+            <a-form-item label="顺序">
+                <a-input v-model:value="category.sort" type="textarea" />
             </a-form-item>
             <a-form-item label="父分类">
-                <a-input v-model:value="ebook.parent"></a-input>
-            </a-form-item>
-
-            <a-form-item label="顺序">
-                <a-input v-model:value="ebook.sort" type="textarea" />
+                <a-input v-model:value="category.parent"></a-input>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -81,15 +80,20 @@ import { defineComponent, onMounted, ref } from "vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
 import { Tool } from "@/utils/tool";
-import facebookFilled from "@ant-design/icons-vue/lib/icons/FacebookFilled";
+import FacebookFilled from "@ant-design/icons-vue/lib/icons/FacebookFilled";
 
 export default defineComponent({
     name: "AdminCategory",
-    methods: { facebookFilled },
+    methods: { FacebookFilled },
     setup() {
         const param = ref();
         param.value = {};
         const categorys = ref();
+        // const pagination = ref({
+        //     current: 1,
+        //     pageSize: 10,
+        //     total: 0,
+        // });
         const loading = ref(false);
 
         const columns = [
@@ -98,7 +102,7 @@ export default defineComponent({
                 dataIndex: "name",
             },
             {
-                title: "文档数",
+                title: "父分类",
                 key: "parent",
                 dataIndex: "parent",
             },
@@ -144,8 +148,11 @@ export default defineComponent({
                 if (data.success) {
                     categorys.value = data.content;
                     console.log("原始数据", categorys.value);
+                    
+                    // 一级分类,存放数组
 
                     level1.value = [];
+                    // 初始为，因为所有数据都是一级分类，一级分类的父id是000
                     level1.value = Tool.array2Tree(categorys.value, 0);
 
                     console.log("树形结构", level1);

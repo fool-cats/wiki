@@ -30,6 +30,8 @@ export class Tool {
   /**
    * 使用递归将数组转为树形结构
    * 父ID属性为parent
+   * 
+   * 第一个属性是数组，第二个属性是父id，如果父id相同则为子节点，
    */
   public static array2Tree (array: any, parentId: number) {
     if (Tool.isEmpty(array)) {
@@ -39,6 +41,7 @@ export class Tool {
     // 该数组用于存放最终结果 也就是树形结构 
     const result = [];
     for (let i = 0; i < array.length; i++) {
+      // 
       const c = array[i];
       // 直到没有父节点为止，停止递归
       // console.log(Number(c.parent), Number(parentId));

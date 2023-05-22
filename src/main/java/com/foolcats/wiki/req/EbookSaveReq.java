@@ -3,6 +3,7 @@ package com.foolcats.wiki.req;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+//请求参数，保存需要所有字段
 public class EbookSaveReq {
     private Long id;
 

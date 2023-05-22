@@ -3,6 +3,7 @@ package com.foolcats.wiki.req;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
+// 分页参数
 public class PageReq {
     @NotNull(message="页码不能为空")
     private int page;

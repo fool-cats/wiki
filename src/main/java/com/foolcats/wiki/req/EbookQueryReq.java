@@ -1,5 +1,6 @@
 package com.foolcats.wiki.req;
 
+//请求参数
 public class EbookQueryReq extends PageReq {
     private Long id;
 
