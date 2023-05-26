@@ -68,3 +68,35 @@ INSERT INTO `category` VALUES (202, 200, '框架应用', 202);
 INSERT INTO `category` VALUES (300, 000, '数据库', 300);
 INSERT INTO `category` VALUES (301, 300, 'Mysql', 301);
 INSERT INTO `category` VALUES (302, 300, 'Mybatis', 302);
+
+
+-- ----------------------------
+-- Table structure for doc
+-- ----------------------------
+DROP TABLE IF EXISTS `doc`;
+CREATE TABLE `doc`  (
+                        `id` bigint NOT NULL COMMENT '主键ID',
+                        `ebook_id` bigint NOT NULL DEFAULT 0 COMMENT '专栏id',
+                        `parent` bigint NOT NULL DEFAULT 0 COMMENT '父id',
+                        `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标题',
+                        `sort` int NULL DEFAULT NULL COMMENT '顺序',
+                        `view_count` int NULL DEFAULT 0 COMMENT '阅读数',
+                        `vote_count` int NULL DEFAULT 0 COMMENT '点赞数',
+                        `deleted` int NULL DEFAULT 0 COMMENT '逻辑删除',
+                        `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+                        `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+                        PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文章' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of doc
+-- ----------------------------
+INSERT INTO `doc` VALUES (1, 1, 0, '文章1', 1, 35, 9, 0, '2021-09-15 21:01:21', '2021-10-07 18:14:57');
+INSERT INTO `doc` VALUES (2, 1, 1, '文章1.1', 1, 18, 2, 0, '2021-09-15 21:01:21', '2021-09-23 15:05:43');
+INSERT INTO `doc` VALUES (3, 1, 0, '文章2', 2, 10, 1, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (4, 1, 3, '文章2.1', 2, 15, 2, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (5, 1, 1437317930831314945, '文章3.1', 2, 21, 1, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (6, 1, 5, '文章3.1.1', 1, 19, 1, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (1437317930831314945, 1, 0, '文章3', 3, 8, 1, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (1438000187241934850, 2, 0, 'Ant Design of Vue', 1, 90, 6, 0, '2021-09-15 21:01:21', '2021-09-15 21:01:21');
+INSERT INTO `doc` VALUES (1438000644823724034, 2, 1438000187241934850, '关于ant-design-vue', 3, 50, 4, 0, '2021-09-15 21:01:21', '2021-10-06 00:25:00');
