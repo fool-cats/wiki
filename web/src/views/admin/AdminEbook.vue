@@ -45,11 +45,14 @@
                 <template #cover="{ text: cover }">
                     <img v-if="cover" :src="cover" alt="avatar" />
                 </template>
-                <template v-slot:category="{ text,record }">
+                <template v-slot:category="{ text, record }">
                     <!-- <img v-if="cover" :src="cover" alt="avatar" /> -->
-                    <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+                    <span
+                        >{{ getCategoryName(record.category1Id) }} /
+                        {{ getCategoryName(record.category2Id) }}</span
+                    >
                 </template>
-                
+
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
                         <a-button type="primary" @click="edit(record)">
@@ -109,9 +112,7 @@
 import { defineComponent, onMounted, ref } from "vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
-import {Tool} from "@/utils/tool";
-
-
+import { Tool } from "@/utils/tool";
 
 export default defineComponent({
     name: "AdminEbook",
@@ -171,7 +172,7 @@ export default defineComponent({
                 .get("/ebook/list", {
                     params: {
                         page: params.page,
-                        size: params.size,  
+                        size: params.size,
                         name: param.value.name,
                     },
                 })
@@ -202,7 +203,7 @@ export default defineComponent({
         const modalLoading = ref(false);
         const handleModalOk = () => {
             modalLoading.value = true;
-            // 只有两个分类，所以只取前两个 
+            // 只有两个分类，所以只取前两个
 
             ebook.value.category1Id = categoryIds.value[0];
             ebook.value.category2Id = categoryIds.value[1];
@@ -226,7 +227,7 @@ export default defineComponent({
             //   modalLoading.value = false;
             //   modalVisible.value = false;
             // }, 2000);
-        };  
+        };
 
         /**
          * 编辑
@@ -236,7 +237,10 @@ export default defineComponent({
             // ebook.value = record;
             ebook.value = Tool.copy(record);
             // 显示分类
-            categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
+            categoryIds.value = [
+                ebook.value.category1Id,
+                ebook.value.category2Id,
+            ];
         };
 
         /**
@@ -274,7 +278,7 @@ export default defineComponent({
 
         const level1 = ref();
         // 只在JS里使用不需要响应式，因为我们不在HTML里面使用。
-        let categorys:any;
+        let categorys: any;
         /**
          * 数据查询
          * 查询所有分类数据，不分页。
@@ -298,6 +302,14 @@ export default defineComponent({
                     level1.value = Tool.array2Tree(categorys, 0);
 
                     console.log("树形结构", level1);
+
+                    // 查询完所有分类后再查询电子书，因为使用axios是异步的，可能导致分类还没查询完就开始查询电子书了。出现错误
+                    handleQuery({
+                        // 这里的属性名要和后端接口的参数名一致，否则后端接收不到
+                        //  /ebook/list?page=1&size=4
+                        page: 1,
+                        size: pagination.value.pageSize,
+                    });
                 } else {
                     message.error(data.message);
                 }
@@ -306,11 +318,10 @@ export default defineComponent({
 
         // 分类级联显示。
         const getCategoryName = (id: number) => {
-
             let result = "";
-            categorys.forEach((element:any) => {
-                if(element.id === id){
-                    result = element.name
+            categorys.forEach((element: any) => {
+                if (element.id === id) {
+                    result = element.name;
                 }
             });
             return result;
@@ -327,13 +338,7 @@ export default defineComponent({
         };
 
         onMounted(() => {
-            handleQueryCategory()
-            handleQuery({
-                // 这里的属性名要和后端接口的参数名一致，否则后端接收不到
-                //  /ebook/list?page=1&size=4
-                page: 1,
-                size: pagination.value.pageSize,
-            });
+            handleQueryCategory();
         });
 
         return {
