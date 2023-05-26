@@ -3,8 +3,16 @@ package com.foolcats.wiki.req;
 //请求参数
 public class EbookQueryReq extends PageReq {
     private Long id;
-
+    private Long categoryId2;
     private String name;
+
+    public Long getCategoryId2() {
+        return categoryId2;
+    }
+
+    public void setCategoryId2(Long categoryId2) {
+        this.categoryId2 = categoryId2;
+    }
 
 
     public Long getId() {
@@ -23,11 +31,11 @@ public class EbookQueryReq extends PageReq {
         this.name = name;
     }
 
-
     @Override
     public String toString() {
         return "EbookQueryReq{" +
                 "id=" + id +
+                ", categoryId2=" + categoryId2 +
                 ", name='" + name + '\'' +
                 "} " + super.toString();
     }

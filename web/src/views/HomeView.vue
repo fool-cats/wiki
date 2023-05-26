@@ -149,24 +149,14 @@ export default defineComponent({
             });
         };
 
-        const handleClick = (value: any) => {
-            // console.log("click ", value);
-            if(value.key === "welcome") {
-                isShowWelcome.value = true;
-            } else {
-                isShowWelcome.value = false;
-            }
-        };
 
-        // 初始化逻辑尽量都放在生命周期函数里，setup就放一些参数，和方法的定义。
-        onMounted(() => {
-            // console.log("HomeView onMounted");
-            handleQueryCategory();
+        const handleQueryEbook = () => {
             axios
                 .get("/ebook/list", {
                     params: {
                         page: 1,
                         size: 1000,
+                        categoryId2: categoryId2,
                     },
                 })
                 .then((response) => {
@@ -175,6 +165,28 @@ export default defineComponent({
                     // ebooks1.books = data.content;
                     // console.log(response);
                 });
+        }
+
+        let categoryId2 = 0;
+
+        const handleClick = (value: any) => {
+            // console.log("click ", value);
+            if(value.key === "welcome") {
+                isShowWelcome.value = true;
+            } else {
+                categoryId2 = value.key;
+                isShowWelcome.value = false;
+                handleQueryEbook();
+            }
+        };
+
+   
+
+        // 初始化逻辑尽量都放在生命周期函数里，setup就放一些参数，和方法的定义。
+        onMounted(() => {
+            // console.log("HomeView onMounted");
+            handleQueryCategory();
+            // handleQueryEbook();
         });
 
         const pagination = {

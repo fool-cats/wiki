@@ -38,9 +38,14 @@ public class EbookService {
 //        createCriteria 相当于where
         EbookExample.Criteria criteria = ebookExample.createCriteria();
 
+//        名字模糊查询
         if(!ObjectUtils.isEmpty(req.getName())){
             //        使用%模糊查询
             criteria.andNameLike("%" + req.getName() + "%");
+        }
+        if(!ObjectUtils.isEmpty(req.getCategoryId2())){
+            //        使用%模糊查询
+            criteria.andCategory2IdEqualTo(req.getCategoryId2());
         }
 
 
