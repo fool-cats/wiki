@@ -6,42 +6,29 @@
                 v-model:openKeys="openKeys"
                 mode="inline"
                 :style="{ height: '100%', borderRight: 0 }"
+                @click="handleClick"
             >
-                <a-sub-menu key="sub1">
-                    <template #title>
+                <a-menu-item key="welcome">
+                    <router-link :to="'/'">
+                        <MailOutlined />
+                        <span> 欢迎 </span>
+                    </router-link>
+                </a-menu-item>
+                <!-- 主菜单/一级菜单 -->
+                <a-sub-menu v-for="item in level1" :key="item.id">
+                    <template v-slot:title>
                         <span>
                             <user-outlined />
-                            subnav 1
+                            {{ item.name }}
                         </span>
                     </template>
-                    <a-menu-item key="1">option1</a-menu-item>
-                    <a-menu-item key="2">option2</a-menu-item>
-                    <a-menu-item key="3">option3</a-menu-item>
-                    <a-menu-item key="4">option4</a-menu-item>
-                </a-sub-menu>
-                <a-sub-menu key="sub2">
-                    <template #title>
+                    <!-- 二级菜单 -->
+                    <a-menu-item v-for="child in item.children" :key="child.id">
                         <span>
-                            <laptop-outlined />
-                            subnav 2
+                            <MailOutlined />
+                            {{ child.name }}
                         </span>
-                    </template>
-                    <a-menu-item key="5">option5</a-menu-item>
-                    <a-menu-item key="6">option6</a-menu-item>
-                    <a-menu-item key="7">option7</a-menu-item>
-                    <a-menu-item key="8">option8</a-menu-item>
-                </a-sub-menu>
-                <a-sub-menu key="sub3">
-                    <template #title>
-                        <span>
-                            <notification-outlined />
-                            subnav 3
-                        </span>
-                    </template>
-                    <a-menu-item key="9">option9</a-menu-item>
-                    <a-menu-item key="10">option10</a-menu-item>
-                    <a-menu-item key="11">option11</a-menu-item>
-                    <a-menu-item key="12">option12</a-menu-item>
+                    </a-menu-item>
                 </a-sub-menu>
             </a-menu>
         </a-layout-sider>
@@ -87,8 +74,9 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, reactive, toRef } from "vue";
+import { message } from "ant-design-vue";
 import axios from "axios";
-
+import { Tool } from "@/utils/tool";
 
 // const listData: Record<string, string>[] = [];
 
@@ -114,12 +102,50 @@ export default defineComponent({
         const ebooks = ref();
         const ebooks1 = reactive({ books: [] });
 
+        // 存放一级分类
+
+        const level1 = ref();
+        // 只在JS里使用不需要响应式，因为我们不在HTML里面使用。
+        let categorys: any;
+        /**
+         * 数据查询
+         * 查询所有分类数据，不分页。
+         **/
+        const handleQueryCategory = () => {
+           
+            // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+            // categorys.value = [];
+            axios.get("/category/all").then((response) => {
+                const data = response.data;
+
+                if (data.success) {
+                    categorys = data.content;
+                    console.log("原始数据", categorys);
+
+                    // 一级分类,存放数组
+
+                    level1.value = [];
+                    // 初始为，因为所有数据都是一级分类，一级分类的父id是000
+                    level1.value = Tool.array2Tree(categorys, 0);
+
+                    console.log("树形结构", level1);
+                } else {
+                    message.error(data.message);
+                }
+            });
+        };
+
+        const handleClick = () => {
+            console.log("click ");
+            
+        }
+
         // 初始化逻辑尽量都放在生命周期函数里，setup就放一些参数，和方法的定义。
         onMounted(() => {
             // console.log("HomeView onMounted");
-
+            handleQueryCategory();
             axios
-                .get("/ebook/list",{
+                .get("/ebook/list", {
                     params: {
                         page: 1,
                         size: 1000,
@@ -133,21 +159,12 @@ export default defineComponent({
                 });
         });
 
-
-
-
-
-
         const pagination = {
             onChange: (page: number) => {
                 console.log(page);
             },
             pageSize: 3,
         };
-      
-
-
-
 
         return {
             ebooks,
@@ -155,13 +172,14 @@ export default defineComponent({
             // listData,
             pagination,
             // actions,
+            level1,
+            handleClick,
         };
     },
 });
 </script>
 
 <style scoped>
-
 .ant-avatar {
     width: 50px;
     height: 50px;
@@ -169,5 +187,4 @@ export default defineComponent({
     border-radius: 8%;
     margin: 5px 0;
 }
-
 </style>
