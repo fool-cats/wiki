@@ -9,16 +9,14 @@
                 @click="handleClick"
             >
                 <a-menu-item key="welcome">
-                    <router-link :to="'/'">
-                        <MailOutlined />
-                        <span> 欢迎 </span>
-                    </router-link>
+                    <MailOutlined />
+                    <span> 欢迎 </span>
                 </a-menu-item>
                 <!-- 主菜单/一级菜单 -->
                 <a-sub-menu v-for="item in level1" :key="item.id">
                     <template v-slot:title>
                         <span>
-                            <user-outlined />
+                            <AppstoreOutlined />
                             {{ item.name }}
                         </span>
                     </template>
@@ -40,11 +38,15 @@
                 minHeight: '280px',
             }"
         >
+            <div class="welcome" v-show="isShowWelcome">
+                <h1>welcome to Java Wiki</h1>
+            </div>
             <a-list
                 item-layout="vertical"
                 size="large"
                 :grid="{ gutter: 16, column: 4 }"
                 :data-source="ebooks"
+                v-show="!isShowWelcome"
             >
                 <template #renderItem="{ item }">
                     <a-list-item key="item.name">
@@ -77,7 +79,12 @@ import { defineComponent, onMounted, ref, reactive, toRef } from "vue";
 import { message } from "ant-design-vue";
 import axios from "axios";
 import { Tool } from "@/utils/tool";
-
+import {
+    MailOutlined,
+    QqOutlined,
+    AppstoreOutlined,
+    SettingOutlined,
+} from "@ant-design/icons-vue";
 // const listData: Record<string, string>[] = [];
 
 // for (let i = 0; i < 23; i++) {
@@ -95,6 +102,13 @@ import { Tool } from "@/utils/tool";
 export default defineComponent({
     name: "HomeView",
 
+    components: {
+        MailOutlined,
+        QqOutlined,
+        AppstoreOutlined,
+        SettingOutlined,
+    },
+
     setup() {
         // console.log("HomeView setup");
 
@@ -102,6 +116,7 @@ export default defineComponent({
         const ebooks = ref();
         const ebooks1 = reactive({ books: [] });
 
+        const isShowWelcome = ref(true);
         // 存放一级分类
 
         const level1 = ref();
@@ -112,7 +127,6 @@ export default defineComponent({
          * 查询所有分类数据，不分页。
          **/
         const handleQueryCategory = () => {
-           
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
             // categorys.value = [];
             axios.get("/category/all").then((response) => {
@@ -135,10 +149,14 @@ export default defineComponent({
             });
         };
 
-        const handleClick = () => {
-            console.log("click ");
-            
-        }
+        const handleClick = (value: any) => {
+            // console.log("click ", value);
+            if(value.key === "welcome") {
+                isShowWelcome.value = true;
+            } else {
+                isShowWelcome.value = false;
+            }
+        };
 
         // 初始化逻辑尽量都放在生命周期函数里，setup就放一些参数，和方法的定义。
         onMounted(() => {
@@ -174,6 +192,8 @@ export default defineComponent({
             // actions,
             level1,
             handleClick,
+
+            isShowWelcome,
         };
     },
 });

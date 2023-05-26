@@ -189,8 +189,9 @@ export default defineComponent({
             // category.value.category1Id = categoryIds.value[0];
             // category.value.category2Id = categoryIds.value[1];
             axios.post("/category/save", category.value).then((response) => {
-                const data = response.data; // data = commonResp
+                
                 modalLoading.value = false;
+                const data = response.data; // data = commonResp
                 if (data.success) {
                     modalVisible.value = false;
 
