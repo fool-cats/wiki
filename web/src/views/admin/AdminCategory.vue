@@ -67,9 +67,23 @@
             </a-form-item>
             <a-form-item label="顺序">
                 <a-input v-model:value="category.sort" type="textarea" />
+           
+            
             </a-form-item>
+            <!-- 只展示一级分类 -->
             <a-form-item label="父分类">
-                <a-input v-model:value="category.parent"></a-input>
+                <!-- <a-input v-model:value="category.parent"></a-input> -->
+                <a-select
+                    ref="select"
+                    v-model:value="category.parent"
+                    style="width: 120px"
+                >
+                    <a-select-option value="0">无</a-select-option>
+                    <!--  -->
+                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+                    {{ c.name }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -148,7 +162,7 @@ export default defineComponent({
                 if (data.success) {
                     categorys.value = data.content;
                     console.log("原始数据", categorys.value);
-                    
+
                     // 一级分类,存放数组
 
                     level1.value = [];

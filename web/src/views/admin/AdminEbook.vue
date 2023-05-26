@@ -45,6 +45,11 @@
                 <template #cover="{ text: cover }">
                     <img v-if="cover" :src="cover" alt="avatar" />
                 </template>
+                <template v-slot:category="{ text,record }">
+                    <!-- <img v-if="cover" :src="cover" alt="avatar" /> -->
+                    <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+                </template>
+                
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
                         <a-button type="primary" @click="edit(record)">
@@ -81,8 +86,8 @@
             <a-form-item label="名称">
                 <a-input v-model:value="ebook.name" />
             </a-form-item>
-            <a-form-item label="分类一">
-                <!-- <a-cascader
+            <a-form-item label="分类">
+                <a-cascader
                     v-model:value="categoryIds"
                     :field-names="{
                         label: 'name',
@@ -90,20 +95,8 @@
                         children: 'children',
                     }"
                     :options="level1"
-                /> -->
-                <a-input v-model:value="ebook.category1Id"></a-input>
-            </a-form-item>
-            <a-form-item label="分类二">
-                <!-- <a-cascader
-                    v-model:value="categoryIds"
-                    :field-names="{
-                        label: 'name',
-                        value: 'id',
-                        children: 'children',
-                    }"
-                    :options="level1"
-                /> -->
-                <a-input v-model:value="ebook.category2Id"></a-input>
+                />
+                <!-- <a-input v-model:value="ebook.category1Id"></a-input> -->
             </a-form-item>
             <a-form-item label="描述">
                 <a-input v-model:value="ebook.description" type="textarea" />
@@ -169,6 +162,7 @@ export default defineComponent({
         /**
          * 数据查询
          **/
+
         const handleQuery = (params: any) => {
             loading.value = true;
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
@@ -202,14 +196,16 @@ export default defineComponent({
         /**
          * 数组，[100, 101]对应：前端开发 / Vue
          */
-        //   const categoryIds = ref();
-        const ebook = ref({});
+        const categoryIds = ref();
+        const ebook = ref();
         const modalVisible = ref(false);
         const modalLoading = ref(false);
         const handleModalOk = () => {
             modalLoading.value = true;
-            // ebook.value.category1Id = categoryIds.value[0];
-            // ebook.value.category2Id = categoryIds.value[1];
+            // 只有两个分类，所以只取前两个 
+
+            ebook.value.category1Id = categoryIds.value[0];
+            ebook.value.category2Id = categoryIds.value[1];
             axios.post("/ebook/save", ebook.value).then((response) => {
                 const data = response.data; // data = commonResp
                 modalLoading.value = false;
@@ -239,7 +235,8 @@ export default defineComponent({
             modalVisible.value = true;
             // ebook.value = record;
             ebook.value = Tool.copy(record);
-            // categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
+            // 显示分类
+            categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
         };
 
         /**
@@ -273,6 +270,51 @@ export default defineComponent({
             });
         };
 
+        // 存放一级分类
+
+        const level1 = ref();
+        // 只在JS里使用不需要响应式，因为我们不在HTML里面使用。
+        let categorys:any;
+        /**
+         * 数据查询
+         * 查询所有分类数据，不分页。
+         **/
+        const handleQueryCategory = () => {
+            loading.value = true;
+            // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+            // categorys.value = [];
+            axios.get("/category/all").then((response) => {
+                loading.value = false;
+                const data = response.data;
+
+                if (data.success) {
+                    categorys = data.content;
+                    console.log("原始数据", categorys);
+
+                    // 一级分类,存放数组
+
+                    level1.value = [];
+                    // 初始为，因为所有数据都是一级分类，一级分类的父id是000
+                    level1.value = Tool.array2Tree(categorys, 0);
+
+                    console.log("树形结构", level1);
+                } else {
+                    message.error(data.message);
+                }
+            });
+        };
+
+        // 分类级联显示。
+        const getCategoryName = (id: number) => {
+
+            let result = "";
+            categorys.forEach((element:any) => {
+                if(element.id === id){
+                    result = element.name
+                }
+            });
+            return result;
+        };
         /**
          * 表格点击页码时触发
          */
@@ -285,6 +327,7 @@ export default defineComponent({
         };
 
         onMounted(() => {
+            handleQueryCategory()
             handleQuery({
                 // 这里的属性名要和后端接口的参数名一致，否则后端接收不到
                 //  /ebook/list?page=1&size=4
@@ -301,6 +344,7 @@ export default defineComponent({
             columns,
             loading,
             handleTableChange,
+            getCategoryName,
 
             edit,
             add,
@@ -311,6 +355,8 @@ export default defineComponent({
             handleQuery,
             modalVisible,
             handleModalOk,
+            categoryIds,
+            level1,
         };
     },
 });
