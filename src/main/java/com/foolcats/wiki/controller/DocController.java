@@ -2,14 +2,15 @@ package com.foolcats.wiki.controller;
 
 import com.foolcats.wiki.req.DocQueryReq;
 import com.foolcats.wiki.req.DocSaveReq;
-import com.foolcats.wiki.resp.DocQueryResp;
 import com.foolcats.wiki.resp.CommonResp;
+import com.foolcats.wiki.resp.DocQueryResp;
 import com.foolcats.wiki.resp.PageResp;
 import com.foolcats.wiki.service.DocService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -58,12 +59,14 @@ public class DocController {
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable Long id) {
+    @DeleteMapping("/delete/{idsStr}")
+    public CommonResp delete(@PathVariable String idsStr) {
 //      删除一般是通过id来删除的，因为id是主键
-        CommonResp resp = new CommonResp();
+        CommonResp resp = new CommonResp<>();
 //        PageResp<DocResp> list =
-        docService.delete(id);
+//        字符串转数组
+        List<String> list = Arrays.asList(idsStr.split(","));
+        docService.delete(list);
 
 //        resp.setContent(list);
         return resp;

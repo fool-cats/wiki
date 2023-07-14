@@ -65,13 +65,23 @@
             <a-form-item label="名称">
                 <a-input v-model:value="doc.name" />
             </a-form-item>
+            <a-form-item label="名称">
+                <a-tree-select
+                    v-model:value="doc.parent"
+                    style="width: 100%"
+                    :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                    placeholder="选择父文档"
+                    tree-default-expand-all
+                    :tree-data="treeSelectData"
+                    :replaceFields="{ title: 'name', key: 'id', value: 'id' }"
+                >
+                </a-tree-select>
+            </a-form-item>
             <a-form-item label="顺序">
                 <a-input v-model:value="doc.sort" type="textarea" />
-           
-            
             </a-form-item>
             <!-- 只展示一级文档-->
-            <a-form-item label="父分类">
+            <a-form-item label="父文档">
                 <!-- <a-input v-model:value="doc.parent"></a-input> -->
                 <a-select
                     ref="select"
@@ -80,8 +90,13 @@
                 >
                     <a-select-option value="0">无</a-select-option>
                     <!--  -->
-                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-                    {{ c.name }}
+                    <a-select-option
+                        v-for="c in level1"
+                        :key="c.id"
+                        :value="c.id"
+                        :disabled="doc.id === c.id"
+                    >
+                        {{ c.name }}
                     </a-select-option>
                 </a-select>
             </a-form-item>
@@ -95,11 +110,13 @@ import axios from "axios";
 import { message } from "ant-design-vue";
 import { Tool } from "@/utils/tool";
 import FacebookFilled from "@ant-design/icons-vue/lib/icons/FacebookFilled";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
     name: "AdminDoc",
     methods: { FacebookFilled },
     setup() {
+        const route = useRoute();
         const param = ref();
         param.value = {};
         const docs = ref();
@@ -154,7 +171,7 @@ export default defineComponent({
         const handleQuery = () => {
             loading.value = true;
             // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-            // docs.value = [];
+            docs.value = [];
             axios.get("/doc/all").then((response) => {
                 loading.value = false;
                 const data = response.data;
@@ -181,6 +198,9 @@ export default defineComponent({
          * 数组，[100, 101]对应：前端开发 / Vue
          */
         //   const docIds = ref();
+        // 因为树节点的属性状态，会随当前节点而变化，所以单独声明一个响应式变量。
+        const treeSelectData = ref();
+        treeSelectData.value = [];
         const doc = ref({});
         const modalVisible = ref(false);
         const modalLoading = ref(false);
@@ -189,7 +209,6 @@ export default defineComponent({
             // doc.value.doc1Id = docIds.value[0];
             // doc.value.doc2Id = docIds.value[1];
             axios.post("/doc/save", doc.value).then((response) => {
-                
                 modalLoading.value = false;
                 const data = response.data; // data = commonResp
                 if (data.success) {
@@ -216,6 +235,14 @@ export default defineComponent({
             // doc.value = record;
             doc.value = Tool.copy(record);
             // docIds.value = [doc.value.doc1Id, doc.value.doc2Id]
+
+            // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
+            treeSelectData.value = Tool.copy(level1.value);
+            // 通过record获取当前id，然后调用setDisable方法，使得当前节点以及它的子节点全都disable。
+            setDisable(treeSelectData.value, record.id);
+
+            // 为选择树添加一个"无"
+            treeSelectData.value.unshift({ id: 0, name: "无" });
         };
 
         /**
@@ -223,7 +250,18 @@ export default defineComponent({
          */
         const add = () => {
             modalVisible.value = true;
-            doc.value = {};
+            // 新增的时候获取id，因为新增的时候，id是空的，所以要获取id，必须在新增的时候获取。
+            doc.value = {
+                // 与route.query.ebookId绑定，当ebookId变化时，doc.value.ebookId也会变化
+                ebookId: route.query.ebookId,
+            };
+
+            // 将level1的值复制到treeSelectData
+            treeSelectData.value = Tool.copy(level1.value)
+
+
+            // 
+            treeSelectData.value.unshift({id:0,name:'无'});
 
             // doc.value = Tool.copy(record);
             // docIds.value = [doc.value.doc1Id, doc.value.doc2Id]
@@ -234,7 +272,10 @@ export default defineComponent({
          */
 
         const handleDelete = (id: number) => {
-            axios.delete("/doc/delete/" + id).then((response) => {
+
+            // 1. 获取要删除的整棵树和id，现在ids就有值来,使用join将数组转换为字符串。
+            getDeleteIds(level1.value, id);
+            axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
                 const data = response.data;
                 if (data.success) {
                     // 重新加载列表
@@ -246,8 +287,71 @@ export default defineComponent({
             });
         };
 
+        const ids:Array<string> = []    
+
+        // 查看整根树枝
+        const getDeleteIds = (treeSelectData: any, id: any) => {
+            // console.log(treeSelectData, id);
+            // 遍历数组，即遍历某一层节点
+            for (let i = 0; i < treeSelectData.length; i++) {
+                const node = treeSelectData[i];
+                if (node.id === id) {
+                    // 如果当前节点就是目标节点
+                    console.log("disabled", node);
+                    // 将目标id放入结果集ids中
+                    ids.push(node.id)
+                    // 遍历所有子节点   
+                    const children = node.children;
+                    if (Tool.isNotEmpty(children)) {
+                        for (let j = 0; j < children.length; j++) {
+                            getDeleteIds(children, children[j].id);
+                        }
+                    }
+                } else {
+                    // 如果当前节点不是目标节点，则到其子节点再找找看。
+                    const children = node.children;
+                    if (Tool.isNotEmpty(children)) {
+                        getDeleteIds(children, id);
+                    }
+                }
+            }
+        };
+
+
+        /**
+         * 将某节点及其子孙节点全部置为disabled
+         */
+        const setDisable = (treeSelectData: any, id: any) => {
+            // console.log(treeSelectData, id);
+            // 遍历数组，即遍历某一层节点
+            for (let i = 0; i < treeSelectData.length; i++) {
+                const node = treeSelectData[i];
+                if (node.id === id) {
+                    // 如果当前节点就是目标节点
+                    console.log("disabled", node);
+                    // 将目标节点设置为disabled
+                    node.disabled = true;
+
+                    // 遍历所有子节点，将所有子节点全部都加上disabled
+                    const children = node.children;
+                    if (Tool.isNotEmpty(children)) {
+                        for (let j = 0; j < children.length; j++) {
+                            setDisable(children, children[j].id);
+                        }
+                    }
+                } else {
+                    // 如果当前节点不是目标节点，则到其子节点再找找看。
+                    const children = node.children;
+                    if (Tool.isNotEmpty(children)) {
+                        setDisable(children, id);
+                    }
+                }
+            }
+        };
+
         onMounted(() => {
             handleQuery();
+            // console.log("test"+ doc.value);
         });
 
         return {
@@ -267,6 +371,7 @@ export default defineComponent({
             handleQuery,
             modalVisible,
             handleModalOk,
+            treeSelectData,
         };
     },
 });
