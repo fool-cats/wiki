@@ -100,21 +100,43 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
+            <a-form-item label="内容">
+                <div style="border: 1px solid #ccc">
+                    <Toolbar
+                        style="border-bottom: 1px solid #ccc"
+                        :editor="editorRef"
+                        :defaultConfig="toolbarConfig"
+                        :mode="mode"
+                    />
+                    <Editor
+                        style="height: 500px; overflow-y: hidden"
+                        v-model="valueHtml"
+                        :defaultConfig="editorConfig"
+                        :mode="mode"
+                        @onCreated="handleCreated"
+                    />
+                </div>
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+
+import { defineComponent, onMounted, ref,shallowRef,onBeforeUnmount } from "vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
 import { Tool } from "@/utils/tool";
 import FacebookFilled from "@ant-design/icons-vue/lib/icons/FacebookFilled";
 import { useRoute } from "vue-router";
+import '@wangeditor/editor/dist/css/style.css' // 引入 css  
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+
 
 export default defineComponent({
     name: "AdminDoc",
     methods: { FacebookFilled },
+    components: { Editor, Toolbar },
     setup() {
         const route = useRoute();
         const param = ref();
@@ -125,6 +147,28 @@ export default defineComponent({
         //     pageSize: 10,
         //     total: 0,
         // });
+
+          // 编辑器实例，必须用 shallowRef
+    const editorRef = shallowRef()
+
+// 内容 HTML
+const valueHtml = ref('<p>hello</p>')
+
+        const toolbarConfig = {}
+    const editorConfig = { placeholder: '请输入内容...' }
+
+   // 组件销毁时，也及时销毁编辑器
+   onBeforeUnmount(() => {
+        const editor = editorRef.value
+        if (editor == null) return
+        editor.destroy()
+    })
+
+    const handleCreated = (editor:any) => {
+      editorRef.value = editor // 记录 editor 实例，重要！
+    }
+
+
         const loading = ref(false);
 
         const columns = [
@@ -257,11 +301,10 @@ export default defineComponent({
             };
 
             // 将level1的值复制到treeSelectData
-            treeSelectData.value = Tool.copy(level1.value)
+            treeSelectData.value = Tool.copy(level1.value);
 
-
-            // 
-            treeSelectData.value.unshift({id:0,name:'无'});
+            //
+            treeSelectData.value.unshift({ id: 0, name: "无" });
 
             // doc.value = Tool.copy(record);
             // docIds.value = [doc.value.doc1Id, doc.value.doc2Id]
@@ -272,7 +315,6 @@ export default defineComponent({
          */
 
         const handleDelete = (id: number) => {
-
             // 1. 获取要删除的整棵树和id，现在ids就有值来,使用join将数组转换为字符串。
             getDeleteIds(level1.value, id);
             axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
@@ -287,7 +329,7 @@ export default defineComponent({
             });
         };
 
-        const ids:Array<string> = []    
+        const ids: Array<string> = [];
 
         // 查看整根树枝
         const getDeleteIds = (treeSelectData: any, id: any) => {
@@ -299,8 +341,8 @@ export default defineComponent({
                     // 如果当前节点就是目标节点
                     console.log("disabled", node);
                     // 将目标id放入结果集ids中
-                    ids.push(node.id)
-                    // 遍历所有子节点   
+                    ids.push(node.id);
+                    // 遍历所有子节点
                     const children = node.children;
                     if (Tool.isNotEmpty(children)) {
                         for (let j = 0; j < children.length; j++) {
@@ -316,7 +358,6 @@ export default defineComponent({
                 }
             }
         };
-
 
         /**
          * 将某节点及其子孙节点全部置为disabled
@@ -372,6 +413,14 @@ export default defineComponent({
             modalVisible,
             handleModalOk,
             treeSelectData,
+
+
+            editorRef,
+      valueHtml,
+      mode: 'default', // 或 'simple'
+      toolbarConfig,
+      editorConfig,
+      handleCreated
         };
     },
 });
